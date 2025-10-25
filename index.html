@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Calculadora de Calorías - Almuerzo Colombiano</title>
+    <title>Calculadora de Calorías - Almuerzo Colombiano Extendido</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
@@ -30,31 +30,30 @@
             position: sticky;
             top: 1.5rem; /* 24px */
         }
+        /* Las categorías ocupan todo el ancho en la lista de alimentos */
+        .category-title-container {
+            grid-column: 1 / -1; /* Ocupa todas las columnas */
+        }
     </style>
 </head>
 <body class="text-gray-800">
 
     <div class="container mx-auto p-4 md:p-8">
-        <!-- Encabezado -->
         <header class="text-center mb-8">
-            <h1 class="text-3xl md:text-4xl font-bold text-slate-800">Calculadora de Calorías</h1>
-            <p class="text-slate-600 mt-2">Estima las calorías de tu almuerzo colombiano.</p>
+            <h1 class="text-3xl md:text-4xl font-bold text-slate-800">Calculadora de Calorías 🍲</h1>
+            <p class="text-slate-600 mt-2">Estima las calorías de tu almuerzo colombiano, ¡versión extendida!</p>
         </header>
 
         <main class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-            <!-- Columna de alimentos -->
             <div id="food-list" class="lg:col-span-2 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
-                <!-- Las categorías y alimentos se insertarán aquí dinámicamente -->
-            </div>
+                </div>
 
-            <!-- Columna de resumen -->
             <div class="lg:col-span-1">
                 <div class="sticky-summary bg-white p-6 rounded-2xl shadow-lg">
                     <h2 class="text-2xl font-semibold mb-4 border-b pb-3 text-slate-700">Resumen del Almuerzo</h2>
                     <div id="summary-items" class="custom-scrollbar max-h-80 overflow-y-auto pr-2">
                         <p id="empty-summary-message" class="text-gray-500 text-center py-4">Selecciona alimentos para ver el resumen aquí.</p>
-                        <!-- Los items seleccionados se agregarán aquí -->
-                    </div>
+                        </div>
                     <div class="mt-6 border-t pt-4">
                         <div class="flex justify-between items-center text-xl font-bold">
                             <span class="text-slate-800">TOTAL:</span>
@@ -71,66 +70,77 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', () => {
+            // Datos de alimentos extendidos para un almuerzo colombiano
+            // Calorías aproximadas por 100g de porción comestible cocinada
             const foodData = [
-                { Categoria: "Cereales", Alimento: "Arroz blanco cocido", Calorias: 130 },
-                { Categoria: "Cereales", Alimento: "Arroz integral cocido", Calorias: 111 },
-                { Categoria: "Cereales", Alimento: "Arepa de maíz blanco", Calorias: 270 },
-                { Categoria: "Cereales", Alimento: "Arepa de choclo", Calorias: 250 },
-                { Categoria: "Cereales", Alimento: "Quinua cocida", Calorias: 120 },
-                { Categoria: "Cereales", Alimento: "Maíz molido (para mazamorra)", Calorias: 365 },
-                { Categoria: "Legumbres", Alimento: "Frijoles rojos cocidos", Calorias: 127 },
-                { Categoria: "Legumbres", Alimento: "Frijoles cargamanto cocidos", Calorias: 130 },
-                { Categoria: "Legumbres", Alimento: "Lentejas cocidas", Calorias: 116 },
-                { Categoria: "Legumbres", Alimento: "Garbanzos cocidos", Calorias: 164 },
-                { Categoria: "Legumbres", Alimento: "Arvejas verdes cocidas", Calorias: 81 },
-                { Categoria: "Legumbres", Alimento: "Habas cocidas", Calorias: 88 },
-                { Categoria: "Carnes", Alimento: "Carne de res asada", Calorias: 291 },
-                { Categoria: "Carnes", Alimento: "Carne de cerdo asada", Calorias: 242 },
-                { Categoria: "Carnes", Alimento: "Pollo asado", Calorias: 239 },
-                { Categoria: "Carnes", Alimento: "Chicharrón de cerdo", Calorias: 660 },
-                { Categoria: "Carnes", Alimento: "Chorizo colombiano", Calorias: 278 },
-                { Categoria: "Carnes", Alimento: "Morcilla", Calorias: 379 },
-                { Categoria: "Carnes", Alimento: "Carne de cabro asada", Calorias: 143 },
-                { Categoria: "Proteínas", Alimento: "Pescado frito (mojarra)", Calorias: 200 },
-                { Categoria: "Proteínas", Alimento: "Tilapia al horno", Calorias: 128 },
-                { Categoria: "Proteínas", Alimento: "Atún en lata (en agua)", Calorias: 86 },
-                { Categoria: "Proteínas", Alimento: "Huevo frito", Calorias: 201 },
-                { Categoria: "Proteínas", Alimento: "Queso fresco", Calorias: 300 },
-                { Categoria: "Proteínas", Alimento: "Tofu (para variaciones veganas)", Calorias: 76 },
-                { Categoria: "Verduras", Alimento: "Tomate fresco", Calorias: 18 },
-                { Categoria: "Verduras", Alimento: "Cebolla", Calorias: 40 },
-                { Categoria: "Verduras", Alimento: "Zanahoria cocida", Calorias: 41 },
-                { Categoria: "Verduras", Alimento: "Lechuga", Calorias: 15 },
-                { Categoria: "Verduras", Alimento: "Repollo", Calorias: 25 },
-                { Categoria: "Verduras", Alimento: "Espinaca cocida", Calorias: 23 },
-                { Categoria: "Verduras", Alimento: "Pimentón (pimiento)", Calorias: 31 },
-                { Categoria: "Verduras", Alimento: "Acelgas", Calorias: 33 },
-                { Categoria: "Tubérculos", Alimento: "Papa cocida", Calorias: 89 },
-                { Categoria: "Tubérculos", Alimento: "Yuca cocida", Calorias: 160 },
-                { Categoria: "Tubérculos", Alimento: "Ñame cocido", Calorias: 118 },
-                { Categoria: "Tubérculos", Alimento: "Arracacha cocida", Calorias: 97 },
-                { Categoria: "Tubérculos", Alimento: "Camote (batata) cocido", Calorias: 131 },
-                { Categoria: "Tubérculos", Alimento: "Ahuyama (calabaza) cocida", Calorias: 26 },
-                { Categoria: "Frutas y Plátanos", Alimento: "Plátano maduro frito", Calorias: 221 },
-                { Categoria: "Frutas y Plátanos", Alimento: "Patacón (plátano verde frito)", Calorias: 200 },
-                { Categoria: "Frutas y Plátanos", Alimento: "Aguacate", Calorias: 160 },
-                { Categoria: "Frutas y Plátanos", Alimento: "Mazorca de maíz cocida", Calorias: 96 },
-                { Categoria: "Frutas y Plátanos", Alimento: "Mango maduro", Calorias: 60 },
-                { Categoria: "Frutas y Plátanos", Alimento: "Papaya", Calorias: 43 },
-                { Categoria: "Frutas y Plátanos", Alimento: "Guanábana", Calorias: 66 },
-                { Categoria: "Frutas y Plátanos", Alimento: "Lulo", Calorias: 42 },
-                { Categoria: "Frutas y Plátanos", Alimento: "Maracuyá", Calorias: 51 },
-                { Categoria: "Otros", Alimento: "Hogao (salsa)", Calorias: 100 },
-                { Categoria: "Otros", Alimento: "Cilantro fresco", Calorias: 23 },
-                { Categoria: "Otros", Alimento: "Ajo", Calorias: 149 },
-                { Categoria: "Otros", Alimento: "Guascas (hierba para ajiaco)", Calorias: 50 },
-                { Categoria: "Otros", Alimento: "Aceite vegetal", Calorias: 884 },
-                { Categoria: "Otros", Alimento: "Mantequilla", Calorias: 717 },
-                { Categoria: "Otros", Alimento: "Leche", Calorias: 42 },
-                { Categoria: "Otros", Alimento: "Queso costeño rallado", Calorias: 350 },
-                { Categoria: "Otros", Alimento: "Aceitunas verdes", Calorias: 132 },
-                { Categoria: "Otros", Alimento: "Almendras", Calorias: 620 },
-                { Categoria: "Otros", Alimento: "Panela (azúcar de caña)", Calorias: 375 }
+                // --- Platos Fuertes Típicos / Bases ---
+                { Categoria: "Platos Típicos", Alimento: "Bandeja Paisa (Estimado)", Calorias: 400 }, // Estimado por 100g, plato completo ~1200+
+                { Categoria: "Platos Típicos", Alimento: "Ajiaco Santafereño (Sopa)", Calorias: 80 },
+                { Categoria: "Platos Típicos", Alimento: "Sancocho de Gallina (Sopa)", Calorias: 95 },
+                { Categoria: "Platos Típicos", Alimento: "Tamal (relleno promedio)", Calorias: 240 },
+                { Categoria: "Platos Típicos", Alimento: "Fritanga (Estimado)", Calorias: 350 },
+                
+                // --- Cereales y Carbohidratos ---
+                { Categoria: "Cereales y Harinas", Alimento: "Arroz blanco cocido", Calorias: 130 },
+                { Categoria: "Cereales y Harinas", Alimento: "Arroz integral cocido", Calorias: 111 },
+                { Categoria: "Cereales y Harinas", Alimento: "Arepa de maíz blanco (mediana)", Calorias: 270 },
+                { Categoria: "Cereales y Harinas", Alimento: "Arepa de choclo con queso", Calorias: 250 },
+                { Categoria: "Cereales y Harinas", Alimento: "Pan de bono", Calorias: 300 },
+                { Categoria: "Cereales y Harinas", Alimento: "Empanada frita (promedio)", Calorias: 280 },
+                
+                // --- Legumbres (Granos) ---
+                { Categoria: "Legumbres (Granos)", Alimento: "Frijoles rojos cocidos (guisados)", Calorias: 150 }, // Con algo de grasa
+                { Categoria: "Legumbres (Granos)", Alimento: "Lentejas cocidas (guisadas)", Calorias: 130 },
+                { Categoria: "Legumbres (Granos)", Alimento: "Garbanzos cocidos (guisados)", Calorias: 180 },
+                { Categoria: "Legumbres (Granos)", Alimento: "Arvejas secas cocidas (guisadas)", Calorias: 100 },
+                
+                // --- Proteínas (Carnes y Sustitutos) ---
+                { Categoria: "Proteínas", Alimento: "Carne de res asada (magra)", Calorias: 200 },
+                { Categoria: "Proteínas", Alimento: "Carne de res guisada/en salsa", Calorias: 250 },
+                { Categoria: "Proteínas", Alimento: "Pollo sudado/guisado (sin piel)", Calorias: 165 },
+                { Categoria: "Proteínas", Alimento: "Pechuga de pollo a la plancha", Calorias: 165 },
+                { Categoria: "Proteínas", Alimento: "Chicharrón de cerdo (trozo frito)", Calorias: 660 },
+                { Categoria: "Proteínas", Alimento: "Chorizo colombiano (unidad)", Calorias: 350 },
+                { Categoria: "Proteínas", Alimento: "Pescado frito (Mojarra/Tilapia)", Calorias: 280 },
+                { Categoria: "Proteínas", Alimento: "Huevo frito (unidad)", Calorias: 201 },
+                { Categoria: "Proteínas", Alimento: "Huevo cocido (unidad)", Calorias: 155 },
+                { Categoria: "Proteínas", Alimento: "Queso Costeño (porcion)", Calorias: 350 },
+
+                // --- Tubérculos y Plátanos ---
+                { Categoria: "Tubérculos y Plátanos", Alimento: "Papa salada/cocida", Calorias: 89 },
+                { Categoria: "Tubérculos y Plátanos", Alimento: "Papa frita (tipo francesa)", Calorias: 312 },
+                { Categoria: "Tubérculos y Plátanos", Alimento: "Yuca cocida", Calorias: 160 },
+                { Categoria: "Tubérculos y Plátanos", Alimento: "Yuca frita", Calorias: 330 },
+                { Categoria: "Tubérculos y Plátanos", Alimento: "Plátano maduro frito (tajada)", Calorias: 221 },
+                { Categoria: "Tubérculos y Plátanos", Alimento: "Patacón (plátano verde frito)", Calorias: 250 },
+                { Categoria: "Tubérculos y Plátanos", Alimento: "Papa criolla frita", Calorias: 300 },
+                
+                // --- Ensaladas y Verduras (Crudas/Cocidas) ---
+                { Categoria: "Ensaladas y Verduras", Alimento: "Aguacate (porcion)", Calorias: 160 },
+                { Categoria: "Ensaladas y Verduras", Alimento: "Tomate y Cebolla (sin aderezo)", Calorias: 25 },
+                { Categoria: "Ensaladas y Verduras", Alimento: "Lechuga y Pepino (sin aderezo)", Calorias: 15 },
+                { Categoria: "Ensaladas y Verduras", Alimento: "Remolacha cocida", Calorias: 43 },
+                { Categoria: "Ensaladas y Verduras", Alimento: "Zanahoria rallada", Calorias: 41 },
+                
+                // --- Aderezos, Aceites y Extras ---
+                { Categoria: "Aderezos y Extras", Alimento: "Mayonesa (cucharada/15g)", Calorias: 105 },
+                { Categoria: "Aderezos y Extras", Alimento: "Salsa de Tomate (cucharada/15g)", Calorias: 15 },
+                { Categoria: "Aderezos y Extras", Alimento: "Aceite vegetal (cucharada/15ml)", Calorias: 124 },
+                { Categoria: "Aderezos y Extras", Alimento: "Mantequilla (cucharada/14g)", Calorias: 100 },
+                { Categoria: "Aderezos y Extras", Alimento: "Hogao / Guiso (porción)", Calorias: 100 },
+                
+                // --- Bebidas Típicas (Sin Azúcar Añadida) ---
+                { Categoria: "Bebidas", Alimento: "Limonada natural (sin azúcar)", Calorias: 10 },
+                { Categoria: "Bebidas", Alimento: "Jugo de Maracuyá (sin azúcar)", Calorias: 35 },
+                { Categoria: "Bebidas", Alimento: "Jugo de Mora (sin azúcar)", Calorias: 38 },
+                { Categoria: "Bebidas", Alimento: "Avena (vaso/250ml)", Calorias: 150 },
+                { Categoria: "Bebidas", Alimento: "Agua de Panela (vaso/250ml)", Calorias: 100 },
+                
+                // --- Postres (por porción estimada) ---
+                { Categoria: "Postres", Alimento: "Arequipe (cucharada/30g)", Calorias: 90 },
+                { Categoria: "Postres", Alimento: "Brevas con Arequipe (unidad)", Calorias: 180 },
+                { Categoria: "Postres", Alimento: "Bocadillo Veleño (porción)", Calorias: 85 },
+                { Categoria: "Postres", Alimento: "Claro (Bebida de Maíz)", Calorias: 50 }
             ];
 
             const foodListContainer = document.getElementById('food-list');
@@ -153,11 +163,12 @@
 
             // Renderizar la lista de alimentos
             for (const category in groupedFoods) {
+                // Contenedor para el título de la categoría
                 const categoryContainer = document.createElement('div');
-                categoryContainer.className = "sm:col-span-2 md:col-span-3";
+                categoryContainer.className = "category-title-container"; 
 
                 const categoryTitle = document.createElement('h2');
-                categoryTitle.className = "text-xl font-semibold text-slate-700 mb-4";
+                categoryTitle.className = "text-xl font-bold text-slate-800 border-b-2 border-emerald-500 pb-2 mt-6 mb-4";
                 categoryTitle.textContent = category;
                 categoryContainer.appendChild(categoryTitle);
                 foodListContainer.appendChild(categoryContainer);
@@ -172,7 +183,10 @@
                     
                     const foodCalories = document.createElement('p');
                     foodCalories.className = "text-sm text-gray-500 mb-3";
-                    foodCalories.textContent = `${food.Calorias} Kcal por 100g`;
+                    
+                    // Mostrar "por 100g" para la mayoría, o "por porción/unidad" para otros
+                    const unitText = food.Alimento.includes('(unidad)') || food.Alimento.includes('(vaso') || food.Alimento.includes('(cucharada') || food.Alimento.includes('(porción)') || food.Alimento.includes('(Estimado)') ? 'por unidad/porción' : 'Kcal por 100g';
+                    foodCalories.textContent = `${food.Calorias} ${unitText}`;
 
                     const inputGroup = document.createElement('div');
                     inputGroup.className = "flex items-center";
@@ -180,16 +194,25 @@
                     const input = document.createElement('input');
                     input.type = "number";
                     input.min = "0";
-                    input.placeholder = "Gramos";
+                    input.placeholder = food.Alimento.includes('(unidad)') || food.Alimento.includes('(vaso') || food.Alimento.includes('(cucharada') || food.Alimento.includes('(porción)') || food.Alimento.includes('(Estimado)') ? 'Unidades/Porciones' : 'Gramos';
                     input.className = "w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500";
                     input.dataset.name = food.Alimento;
                     input.dataset.calories = food.Calorias;
+                    input.dataset.isPortion = food.Alimento.includes('(unidad)') || food.Alimento.includes('(vaso') || food.Alimento.includes('(cucharada') || food.Alimento.includes('(porción)') || food.Alimento.includes('(Estimado)') ? 'true' : 'false';
                     
                     input.addEventListener('input', handleInputChange);
 
-                    inputGroup.appendChild(input);
                     card.appendChild(foodName);
                     card.appendChild(foodCalories);
+                    
+                    if (food.Alimento.includes('(Estimado)')) {
+                         const warning = document.createElement('p');
+                         warning.className = "text-xs text-rose-500 mt-1";
+                         warning.textContent = "¡Usa solo una unidad! Es una estimación del plato completo.";
+                         card.appendChild(warning);
+                    }
+                    
+                    inputGroup.appendChild(input);
                     card.appendChild(inputGroup);
                     foodListContainer.appendChild(card);
                 });
@@ -198,11 +221,17 @@
             function handleInputChange(event) {
                 const input = event.target;
                 const foodName = input.dataset.name;
-                const caloriesPer100g = parseInt(input.dataset.calories);
-                const grams = parseInt(input.value);
+                const caloriesPerUnit = parseInt(input.dataset.calories);
+                const quantity = parseFloat(input.value) || 0;
+                const isPortion = input.dataset.isPortion === 'true';
+                
+                // Para Platos Típicos (estimaciones de plato completo), limitar a 1
+                if (foodName.includes('(Estimado)') && quantity > 1) {
+                    input.value = 1;
+                }
 
-                if (grams > 0) {
-                    selectedItems[foodName] = { grams, caloriesPer100g };
+                if (quantity > 0) {
+                    selectedItems[foodName] = { quantity, caloriesPerUnit, isPortion };
                 } else {
                     delete selectedItems[foodName];
                 }
@@ -218,7 +247,19 @@
                     emptySummaryMessage.style.display = 'none';
                     for (const foodName in selectedItems) {
                         const item = selectedItems[foodName];
-                        const itemCalories = (item.grams / 100) * item.caloriesPer100g;
+                        let itemCalories;
+                        let unitDisplay;
+                        
+                        if (item.isPortion) {
+                            // Cálculo para Unidades/Porciones
+                            itemCalories = item.quantity * item.caloriesPerUnit;
+                            unitDisplay = item.quantity === 1 ? 'porción' : (foodName.includes('(unidad)') ? 'unidades' : 'porciones');
+                        } else {
+                            // Cálculo para Gramos
+                            itemCalories = (item.quantity / 100) * item.caloriesPerUnit;
+                            unitDisplay = 'g';
+                        }
+                        
                         totalCalories += itemCalories;
                         
                         const summaryItem = document.createElement('div');
@@ -226,7 +267,7 @@
                         
                         const itemName = document.createElement('span');
                         itemName.className = "text-sm font-medium w-3/5 truncate";
-                        itemName.textContent = `${foodName} (${item.grams}g)`;
+                        itemName.textContent = `${foodName} (${item.quantity}${unitDisplay})`;
                         
                         const itemCal = document.createElement('span');
                         itemCal.className = "text-sm font-semibold text-emerald-600";
@@ -237,8 +278,8 @@
                         summaryItemsContainer.appendChild(summaryItem);
                     }
                 } else {
-                     summaryItemsContainer.appendChild(emptySummaryMessage);
-                     emptySummaryMessage.style.display = 'block';
+                    summaryItemsContainer.appendChild(emptySummaryMessage);
+                    emptySummaryMessage.style.display = 'block';
                 }
 
                 totalCaloriesEl.textContent = `${Math.round(totalCalories)} Kcal`;
