@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calculadora de Calorías - Almuerzo Colombiano</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f1f5f9;
+        }
+        /* Estilo para un scrollbar más sutil */
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 8px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: #f1f1f1;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #d1d5db;
+            border-radius: 10px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+            background: #9ca3af;
+        }
+        .sticky-summary {
+            position: -webkit-sticky;
+            position: sticky;
+            top: 1.5rem; /* 24px */
+        }
+    </style>
+</head>
+<body class="text-gray-800">
+
+    <div class="container mx-auto p-4 md:p-8">
+        <!-- Encabezado -->
+        <header class="text-center mb-8">
+            <h1 class="text-3xl md:text-4xl font-bold text-slate-800">Calculadora de Calorías</h1>
+            <p class="text-slate-600 mt-2">Estima las calorías de tu almuerzo colombiano.</p>
+        </header>
+
+        <main class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <!-- Columna de alimentos -->
+            <div id="food-list" class="lg:col-span-2 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+                <!-- Las categorías y alimentos se insertarán aquí dinámicamente -->
+            </div>
+
+            <!-- Columna de resumen -->
+            <div class="lg:col-span-1">
+                <div class="sticky-summary bg-white p-6 rounded-2xl shadow-lg">
+                    <h2 class="text-2xl font-semibold mb-4 border-b pb-3 text-slate-700">Resumen del Almuerzo</h2>
+                    <div id="summary-items" class="custom-scrollbar max-h-80 overflow-y-auto pr-2">
+                        <p id="empty-summary-message" class="text-gray-500 text-center py-4">Selecciona alimentos para ver el resumen aquí.</p>
+                        <!-- Los items seleccionados se agregarán aquí -->
+                    </div>
+                    <div class="mt-6 border-t pt-4">
+                        <div class="flex justify-between items-center text-xl font-bold">
+                            <span class="text-slate-800">TOTAL:</span>
+                            <span id="total-calories" class="text-emerald-600">0 Kcal</span>
+                        </div>
+                        <button id="reset-button" class="w-full mt-6 bg-rose-500 text-white font-semibold py-3 rounded-lg hover:bg-rose-600 transition-colors duration-300 shadow-sm disabled:bg-gray-300 disabled:cursor-not-allowed">
+                            Limpiar Selección
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const foodData = [
+                { Categoria: "Cereales", Alimento: "Arroz blanco cocido", Calorias: 130 },
+                { Categoria: "Cereales", Alimento: "Arroz integral cocido", Calorias: 111 },
+                { Categoria: "Cereales", Alimento: "Arepa de maíz blanco", Calorias: 270 },
+                { Categoria: "Cereales", Alimento: "Arepa de choclo", Calorias: 250 },
+                { Categoria: "Cereales", Alimento: "Quinua cocida", Calorias: 120 },
+                { Categoria: "Cereales", Alimento: "Maíz molido (para mazamorra)", Calorias: 365 },
+                { Categoria: "Legumbres", Alimento: "Frijoles rojos cocidos", Calorias: 127 },
+                { Categoria: "Legumbres", Alimento: "Frijoles cargamanto cocidos", Calorias: 130 },
+                { Categoria: "Legumbres", Alimento: "Lentejas cocidas", Calorias: 116 },
+                { Categoria: "Legumbres", Alimento: "Garbanzos cocidos", Calorias: 164 },
+                { Categoria: "Legumbres", Alimento: "Arvejas verdes cocidas", Calorias: 81 },
+                { Categoria: "Legumbres", Alimento: "Habas cocidas", Calorias: 88 },
+                { Categoria: "Carnes", Alimento: "Carne de res asada", Calorias: 291 },
+                { Categoria: "Carnes", Alimento: "Carne de cerdo asada", Calorias: 242 },
+                { Categoria: "Carnes", Alimento: "Pollo asado", Calorias: 239 },
+                { Categoria: "Carnes", Alimento: "Chicharrón de cerdo", Calorias: 660 },
+                { Categoria: "Carnes", Alimento: "Chorizo colombiano", Calorias: 278 },
+                { Categoria: "Carnes", Alimento: "Morcilla", Calorias: 379 },
+                { Categoria: "Carnes", Alimento: "Carne de cabro asada", Calorias: 143 },
+                { Categoria: "Proteínas", Alimento: "Pescado frito (mojarra)", Calorias: 200 },
+                { Categoria: "Proteínas", Alimento: "Tilapia al horno", Calorias: 128 },
+                { Categoria: "Proteínas", Alimento: "Atún en lata (en agua)", Calorias: 86 },
+                { Categoria: "Proteínas", Alimento: "Huevo frito", Calorias: 201 },
+                { Categoria: "Proteínas", Alimento: "Queso fresco", Calorias: 300 },
+                { Categoria: "Proteínas", Alimento: "Tofu (para variaciones veganas)", Calorias: 76 },
+                { Categoria: "Verduras", Alimento: "Tomate fresco", Calorias: 18 },
+                { Categoria: "Verduras", Alimento: "Cebolla", Calorias: 40 },
+                { Categoria: "Verduras", Alimento: "Zanahoria cocida", Calorias: 41 },
+                { Categoria: "Verduras", Alimento: "Lechuga", Calorias: 15 },
+                { Categoria: "Verduras", Alimento: "Repollo", Calorias: 25 },
+                { Categoria: "Verduras", Alimento: "Espinaca cocida", Calorias: 23 },
+                { Categoria: "Verduras", Alimento: "Pimentón (pimiento)", Calorias: 31 },
+                { Categoria: "Verduras", Alimento: "Acelgas", Calorias: 33 },
+                { Categoria: "Tubérculos", Alimento: "Papa cocida", Calorias: 89 },
+                { Categoria: "Tubérculos", Alimento: "Yuca cocida", Calorias: 160 },
+                { Categoria: "Tubérculos", Alimento: "Ñame cocido", Calorias: 118 },
+                { Categoria: "Tubérculos", Alimento: "Arracacha cocida", Calorias: 97 },
+                { Categoria: "Tubérculos", Alimento: "Camote (batata) cocido", Calorias: 131 },
+                { Categoria: "Tubérculos", Alimento: "Ahuyama (calabaza) cocida", Calorias: 26 },
+                { Categoria: "Frutas y Plátanos", Alimento: "Plátano maduro frito", Calorias: 221 },
+                { Categoria: "Frutas y Plátanos", Alimento: "Patacón (plátano verde frito)", Calorias: 200 },
+                { Categoria: "Frutas y Plátanos", Alimento: "Aguacate", Calorias: 160 },
+                { Categoria: "Frutas y Plátanos", Alimento: "Mazorca de maíz cocida", Calorias: 96 },
+                { Categoria: "Frutas y Plátanos", Alimento: "Mango maduro", Calorias: 60 },
+                { Categoria: "Frutas y Plátanos", Alimento: "Papaya", Calorias: 43 },
+                { Categoria: "Frutas y Plátanos", Alimento: "Guanábana", Calorias: 66 },
+                { Categoria: "Frutas y Plátanos", Alimento: "Lulo", Calorias: 42 },
+                { Categoria: "Frutas y Plátanos", Alimento: "Maracuyá", Calorias: 51 },
+                { Categoria: "Otros", Alimento: "Hogao (salsa)", Calorias: 100 },
+                { Categoria: "Otros", Alimento: "Cilantro fresco", Calorias: 23 },
+                { Categoria: "Otros", Alimento: "Ajo", Calorias: 149 },
+                { Categoria: "Otros", Alimento: "Guascas (hierba para ajiaco)", Calorias: 50 },
+                { Categoria: "Otros", Alimento: "Aceite vegetal", Calorias: 884 },
+                { Categoria: "Otros", Alimento: "Mantequilla", Calorias: 717 },
+                { Categoria: "Otros", Alimento: "Leche", Calorias: 42 },
+                { Categoria: "Otros", Alimento: "Queso costeño rallado", Calorias: 350 },
+                { Categoria: "Otros", Alimento: "Aceitunas verdes", Calorias: 132 },
+                { Categoria: "Otros", Alimento: "Almendras", Calorias: 620 },
+                { Categoria: "Otros", Alimento: "Panela (azúcar de caña)", Calorias: 375 }
+            ];
+
+            const foodListContainer = document.getElementById('food-list');
+            const summaryItemsContainer = document.getElementById('summary-items');
+            const totalCaloriesEl = document.getElementById('total-calories');
+            const resetButton = document.getElementById('reset-button');
+            const emptySummaryMessage = document.getElementById('empty-summary-message');
+
+            let selectedItems = {};
+
+            // Agrupar alimentos por categoría
+            const groupedFoods = foodData.reduce((acc, food) => {
+                const category = food.Categoria;
+                if (!acc[category]) {
+                    acc[category] = [];
+                }
+                acc[category].push(food);
+                return acc;
+            }, {});
+
+            // Renderizar la lista de alimentos
+            for (const category in groupedFoods) {
+                const categoryContainer = document.createElement('div');
+                categoryContainer.className = "sm:col-span-2 md:col-span-3";
+
+                const categoryTitle = document.createElement('h2');
+                categoryTitle.className = "text-xl font-semibold text-slate-700 mb-4";
+                categoryTitle.textContent = category;
+                categoryContainer.appendChild(categoryTitle);
+                foodListContainer.appendChild(categoryContainer);
+                
+                groupedFoods[category].forEach(food => {
+                    const card = document.createElement('div');
+                    card.className = "bg-white p-4 rounded-xl shadow-md transition-shadow hover:shadow-lg";
+                    
+                    const foodName = document.createElement('h3');
+                    foodName.className = "font-semibold truncate";
+                    foodName.textContent = food.Alimento;
+                    
+                    const foodCalories = document.createElement('p');
+                    foodCalories.className = "text-sm text-gray-500 mb-3";
+                    foodCalories.textContent = `${food.Calorias} Kcal por 100g`;
+
+                    const inputGroup = document.createElement('div');
+                    inputGroup.className = "flex items-center";
+
+                    const input = document.createElement('input');
+                    input.type = "number";
+                    input.min = "0";
+                    input.placeholder = "Gramos";
+                    input.className = "w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500";
+                    input.dataset.name = food.Alimento;
+                    input.dataset.calories = food.Calorias;
+                    
+                    input.addEventListener('input', handleInputChange);
+
+                    inputGroup.appendChild(input);
+                    card.appendChild(foodName);
+                    card.appendChild(foodCalories);
+                    card.appendChild(inputGroup);
+                    foodListContainer.appendChild(card);
+                });
+            }
+
+            function handleInputChange(event) {
+                const input = event.target;
+                const foodName = input.dataset.name;
+                const caloriesPer100g = parseInt(input.dataset.calories);
+                const grams = parseInt(input.value);
+
+                if (grams > 0) {
+                    selectedItems[foodName] = { grams, caloriesPer100g };
+                } else {
+                    delete selectedItems[foodName];
+                }
+                updateSummary();
+            }
+
+            function updateSummary() {
+                summaryItemsContainer.innerHTML = '';
+                let totalCalories = 0;
+                const hasItems = Object.keys(selectedItems).length > 0;
+
+                if (hasItems) {
+                    emptySummaryMessage.style.display = 'none';
+                    for (const foodName in selectedItems) {
+                        const item = selectedItems[foodName];
+                        const itemCalories = (item.grams / 100) * item.caloriesPer100g;
+                        totalCalories += itemCalories;
+                        
+                        const summaryItem = document.createElement('div');
+                        summaryItem.className = "flex justify-between items-center py-2 border-b last:border-b-0";
+                        
+                        const itemName = document.createElement('span');
+                        itemName.className = "text-sm font-medium w-3/5 truncate";
+                        itemName.textContent = `${foodName} (${item.grams}g)`;
+                        
+                        const itemCal = document.createElement('span');
+                        itemCal.className = "text-sm font-semibold text-emerald-600";
+                        itemCal.textContent = `${Math.round(itemCalories)} Kcal`;
+
+                        summaryItem.appendChild(itemName);
+                        summaryItem.appendChild(itemCal);
+                        summaryItemsContainer.appendChild(summaryItem);
+                    }
+                } else {
+                     summaryItemsContainer.appendChild(emptySummaryMessage);
+                     emptySummaryMessage.style.display = 'block';
+                }
+
+                totalCaloriesEl.textContent = `${Math.round(totalCalories)} Kcal`;
+                resetButton.disabled = !hasItems;
+            }
+
+            resetButton.addEventListener('click', () => {
+                selectedItems = {};
+                document.querySelectorAll('#food-list input').forEach(input => input.value = '');
+                updateSummary();
+            });
+            
+            // Estado inicial del botón de limpiar
+            resetButton.disabled = true;
+        });
+    </script>
+</body>
+</html>
